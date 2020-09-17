@@ -1,0 +1,102 @@
+-- Set up tables
+CREATE TABLE athletes (
+	athletes_id INTEGER PRIMARY KEY,
+	first_name TEXT NOT NULL,
+	middle_name TEXT,
+	last_name TEXT NOT NULL,
+	dob DATE,
+	noc TEXT
+);
+
+CREATE TABLE competitions (
+	competitions_id INTEGER PRIMARY KEY,
+	name TEXT NOT NULL,
+	type TEXT NOT NULL,
+	country TEXT NOT NULL,
+	city TEXT,
+	year INTEGER,
+	date_start DATE,
+	date_end DATE
+);
+
+CREATE TABLE scores (
+	athletes_id INTEGER,
+	competitions_id INTEGER,
+	ctype TEXT NOT NULL,
+	doing_aa BOOLEAN NOT NULL,
+	-- FX
+	fx_d REAL,
+	fx_e REAL,
+	fx_pen REAL,
+	fx_final REAL,
+	-- PH
+	ph_d REAL,
+	ph_e REAL,
+	ph_pen REAL,
+	ph_final REAL,
+	-- SR
+	sr_d REAL,
+	sr_e REAL,
+	sr_pen REAL,
+	sr_final REAL,
+	-- VT
+	doing_2vts BOOLEAN,
+	vt_d REAL,
+	vt_e REAL,
+	vt_pen REAL,
+	vt_final REAL,
+	-- second vault
+	vtx_d REAL,
+	vtx_e REAL,
+	vtx_pen REAL,
+	vtx_final REAL,
+	-- if doing two vaults, get cumulative vault scores for final vt score
+	vt_c_final REAL,
+	-- PB
+	pb_d REAL,
+	pb_e REAL,
+	pb_pen REAL,
+	pb_final REAL,
+	-- HB
+	hb_d REAL,
+	hb_e REAL,
+	hb_pen REAL,
+	hb_final REAL,
+	-- AA
+	aa_d REAL,
+	aa_final REAL,
+	PRIMARY KEY (athletes_id, competitions_id),
+	FOREIGN KEY (athletes_id)
+		REFERENCES athletes (athletes_id),
+	FOREIGN KEY (competitions_id)
+		REFERENCES competitions (competitions_id)
+);
+
+-- Views
+SELECT 
+    athletes.first_name AS 'First Name',
+    athletes.last_name AS 'Last Name',
+    competitions.name AS 'Competition',
+    fx_d AS 'FX D-Score',
+    fx_e AS 'FX E-Score',
+    fx_pen AS 'FX Penalty',
+    fx_final AS 'FX Score'
+FROM
+    scores
+INNER JOIN athletes ON athletes.athletes_id = scores.athletes_id
+INNER JOIN competitions ON competitions.competitions_id = scores.competitions_id;
+-- 
+CREATE VIEW v_fxscores AS
+    SELECT athletes.first_name AS [First Name],
+           athletes.last_name AS [Last Name],
+           competitions.name AS Competition,
+           fx_d AS [FX D-Score],
+           fx_e AS [FX E-Score],
+           fx_pen AS [FX Penalty],
+           fx_final AS [FX Score]
+      FROM scores
+           INNER JOIN
+           athletes ON athletes.athletes_id = scores.athletes_id
+           INNER JOIN
+           competitions ON competitions.competitions_id = scores.competitions_id;
+   
